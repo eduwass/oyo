@@ -787,22 +787,12 @@ fn draw_file_list(frame: &mut Frame, app: &mut App, area: Rect) {
     let files = &app.multi_diff.files;
     let file_count = app.multi_diff.file_count();
 
-    let mut added = 0usize;
-    let mut modified = 0usize;
-    let mut deleted = 0usize;
-    let mut renamed = 0usize;
     let mut total_insertions = 0usize;
     let mut total_deletions = 0usize;
 
     for file in files {
         total_insertions += file.insertions;
         total_deletions += file.deletions;
-        match file.status {
-            FileStatus::Added | FileStatus::Untracked => added += 1,
-            FileStatus::Deleted => deleted += 1,
-            FileStatus::Modified => modified += 1,
-            FileStatus::Renamed => renamed += 1,
-        }
     }
 
     let via_text = if app.multi_diff.is_git_mode() {
