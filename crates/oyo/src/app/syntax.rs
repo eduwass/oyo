@@ -221,6 +221,9 @@ impl App {
         if !self.syntax_enabled() {
             return None;
         }
+        if self.multi_diff.file_count() == 0 {
+            return None;
+        }
         let idx = self.multi_diff.selected_index;
         if idx >= self.syntax_caches.len() {
             self.syntax_caches = vec![None; self.multi_diff.file_count()];

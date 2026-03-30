@@ -1561,6 +1561,11 @@ impl App {
         self.maybe_queue_idle_diff();
         self.maybe_check_file_changes();
 
+        // Skip all file-dependent work when there are no files
+        if self.multi_diff.file_count() == 0 {
+            return;
+        }
+
         if let Some(frame) = self.snap_frame {
             let started_at = self.snap_frame_started_at.get_or_insert(now);
             let phase_duration = Duration::from_millis(SNAP_PHASE_MS);

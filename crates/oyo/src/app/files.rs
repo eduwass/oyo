@@ -398,6 +398,9 @@ impl App {
             self.centered_once = false;
             if file_count > 0 {
                 self.handle_file_enter();
+            } else {
+                // No files left (e.g. everything was committed) — return to dashboard
+                self.open_dashboard = true;
             }
         }
         self.files_changed_on_disk = false;
