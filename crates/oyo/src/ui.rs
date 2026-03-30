@@ -472,7 +472,13 @@ fn draw_status_bar(frame: &mut Frame, app: &mut App, area: Rect) {
             Style::default().fg(app.theme.error),
         ));
     }
-    if app.files_changed_on_disk {
+    if app.auto_refresh {
+        right_spans.push(Span::raw(" "));
+        right_spans.push(Span::styled(
+            "auto",
+            Style::default().fg(app.theme.success),
+        ));
+    } else if app.files_changed_on_disk {
         right_spans.push(Span::raw(" "));
         right_spans.push(Span::styled(
             "changed",

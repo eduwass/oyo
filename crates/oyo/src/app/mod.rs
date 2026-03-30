@@ -139,6 +139,8 @@ pub struct App {
     pub pending_g_prefix: bool,
     /// True when files on disk have changed since last refresh
     pub files_changed_on_disk: bool,
+    /// Automatically refresh when files change on disk
+    pub auto_refresh: bool,
     /// Last time we checked file mtimes
     last_fs_check: Instant,
     /// When files were last loaded/refreshed (as SystemTime for mtime comparison)
@@ -553,6 +555,7 @@ impl App {
             blame_worker_tx: None,
             blame_worker_rx: None,
             files_changed_on_disk: false,
+            auto_refresh: false,
             last_fs_check: Instant::now(),
             last_refresh_time: std::time::SystemTime::now(),
             diff_defer: true,

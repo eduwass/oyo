@@ -336,18 +336,24 @@ impl App {
         }
         self.last_fs_check = now;
 
-        if let Some(repo_root) = self.multi_diff.repo_root() {
+        let changed = if let Some(repo_root) = self.multi_diff.repo_root() {
             let repo_root = repo_root.to_path_buf();
-            for file in &self.multi_diff.files {
+            self.multi_diff.files.iter().any(|file| {
                 let full_path = repo_root.join(&file.path);
-                if let Ok(meta) = std::fs::metadata(&full_path) {
-                    if let Ok(mtime) = meta.modified() {
-                        if mtime > self.last_refresh_time {
-                            self.files_changed_on_disk = true;
-                            return;
-                        }
-                    }
-                }
+                std::fs::metadata(&full_path)
+                    .and_then(|m| m.modified())
+                    .map(|mtime| mtime > self.last_refresh_time)
+                    .unwrap_or(false)
+            })
+        } else {
+            false
+        };
+
+        if changed {
+            if self.auto_refresh {
+                self.refresh_current_file();
+            } else {
+                self.files_changed_on_disk = true;
             }
         }
     }

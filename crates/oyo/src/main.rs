@@ -296,6 +296,7 @@ fn apply_config_to_app(app: &mut App, config: &config::Config, args: &Args, ligh
         app.stepping = false;
     } else {
         app.stepping = config.ui.stepping;
+        app.auto_refresh = config.ui.auto_refresh;
     }
     if !app.stepping {
         app.enter_no_step_mode();

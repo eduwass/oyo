@@ -17,6 +17,7 @@ pub(crate) enum PaletteAction {
     Quit,
     RefreshCurrentFile,
     RefreshAllFiles,
+    ToggleAutoRefresh,
 }
 
 #[derive(Clone, Debug)]
@@ -214,6 +215,15 @@ impl App {
             action: PaletteAction::RefreshCurrentFile,
         });
 
+        entries.push(PaletteEntry {
+            label: if self.auto_refresh {
+                "Auto-refresh: ON (click to disable)".to_string()
+            } else {
+                "Auto-refresh: OFF (click to enable)".to_string()
+            },
+            action: PaletteAction::ToggleAutoRefresh,
+        });
+
         if self.stepping {
             entries.push(PaletteEntry {
                 label: "Toggle autoplay".to_string(),
@@ -250,6 +260,7 @@ impl App {
             PaletteAction::Quit => self.should_quit = true,
             PaletteAction::RefreshCurrentFile => self.refresh_current_file(),
             PaletteAction::RefreshAllFiles => self.refresh_all_files(),
+            PaletteAction::ToggleAutoRefresh => self.auto_refresh = !self.auto_refresh,
         }
     }
 

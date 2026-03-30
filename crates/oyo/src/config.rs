@@ -696,6 +696,9 @@ pub struct UiConfig {
     pub time: TimeConfig,
     /// Enable stepping (default: true). If false, shows all changes (no-step behavior)
     pub stepping: bool,
+    /// Automatically refresh when files change on disk (default: false)
+    #[serde(default)]
+    pub auto_refresh: bool,
     /// Marker for primary active line (left pane / unified pane)
     pub primary_marker: String,
     /// Marker for right pane primary line (defaults to ◀)
@@ -728,6 +731,7 @@ impl Default for UiConfig {
             blame: BlameConfig::default(),
             time: TimeConfig::default(),
             stepping: true,
+            auto_refresh: false,
             primary_marker: "▶".to_string(),
             primary_marker_right: None,
             extent_marker: "▌".to_string(),
