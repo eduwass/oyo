@@ -144,6 +144,21 @@ impl Dashboard {
         }
     }
 
+    /// Update the working tree and staged file counts from git.
+    pub fn update_file_counts(&mut self, working_files: usize, staged_files: usize) {
+        for entry in &mut self.entries {
+            match &mut entry.kind {
+                EntryKind::WorkingTree { files } => *files = working_files,
+                EntryKind::Staged { files } => *files = staged_files,
+                _ => {}
+            }
+        }
+    }
+
+    pub fn repo_root(&self) -> &PathBuf {
+        &self.repo_root
+    }
+
     pub fn filter_active(&self) -> bool {
         self.filter_active
     }

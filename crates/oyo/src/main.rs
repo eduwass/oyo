@@ -1572,8 +1572,23 @@ fn run_dashboard<B: Backend>(
     dashboard: &mut Dashboard,
 ) -> Result<Option<DashboardSelection>> {
     let tick_rate = Duration::from_millis(16);
+    let mut last_git_check = std::time::Instant::now();
 
     loop {
+        // Periodically refresh working/staged file counts from git
+        let now = std::time::Instant::now();
+        if now.duration_since(last_git_check) >= Duration::from_secs(2) {
+            last_git_check = now;
+            let repo_root = dashboard.repo_root().clone();
+            let working = oyo_core::git::get_uncommitted_changes(&repo_root)
+                .map(|c| c.len())
+                .unwrap_or(0);
+            let staged = oyo_core::git::get_staged_changes(&repo_root)
+                .map(|c| c.len())
+                .unwrap_or(0);
+            dashboard.update_file_counts(working, staged);
+        }
+
         terminal.draw(|f| dashboard.draw(f))?;
 
         if event::poll(tick_rate)? {
