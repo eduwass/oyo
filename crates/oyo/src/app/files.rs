@@ -396,7 +396,9 @@ impl App {
             self.horizontal_scroll = 0;
             self.needs_scroll_to_active = true;
             self.centered_once = false;
-            self.handle_file_enter();
+            if file_count > 0 {
+                self.handle_file_enter();
+            }
         }
         self.files_changed_on_disk = false;
         self.last_refresh_time = std::time::SystemTime::now();
