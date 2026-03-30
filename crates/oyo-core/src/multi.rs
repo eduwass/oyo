@@ -966,6 +966,43 @@ impl MultiFileDiff {
         self.repo_root.is_some()
     }
 
+    /// Check if the list of changed files from git differs from the current file list.
+    /// Lightweight: only compares paths, does not read file contents.
+    pub fn has_file_list_changed(&self) -> bool {
+        let repo_root = match &self.repo_root {
+            Some(root) => root.clone(),
+            None => return false,
+        };
+        let mode = match &self.git_mode {
+            Some(mode) => mode.clone(),
+            None => return false,
+        };
+
+        let changes = match mode {
+            GitDiffMode::Uncommitted => crate::git::get_uncommitted_changes(&repo_root),
+            GitDiffMode::Staged => crate::git::get_staged_changes(&repo_root),
+            GitDiffMode::Range { ref from, ref to } => {
+                crate::git::get_changes_between(&repo_root, from, to)
+            }
+            GitDiffMode::IndexRange { ref from, to_index } => {
+                crate::git::get_changes_between_index(&repo_root, from, !to_index)
+            }
+        };
+        let changes = match changes {
+            Ok(c) => c,
+            Err(_) => return false,
+        };
+
+        if changes.len() != self.files.len() {
+            return true;
+        }
+
+        self.files
+            .iter()
+            .zip(changes.iter())
+            .any(|(f, c)| f.path != c.path)
+    }
+
     /// Return a display-friendly git range for header usage (if applicable).
     pub fn git_range_display(&self) -> Option<(String, String)> {
         let mode = self.git_mode.as_ref()?;

@@ -791,8 +791,12 @@ fn draw_file_list(frame: &mut Frame, app: &mut App, area: Rect) {
     let mut modified = 0usize;
     let mut deleted = 0usize;
     let mut renamed = 0usize;
+    let mut total_insertions = 0usize;
+    let mut total_deletions = 0usize;
 
     for file in files {
+        total_insertions += file.insertions;
+        total_deletions += file.deletions;
         match file.status {
             FileStatus::Added | FileStatus::Untracked => added += 1,
             FileStatus::Deleted => deleted += 1,
@@ -866,21 +870,14 @@ fn draw_file_list(frame: &mut Frame, app: &mut App, area: Rect) {
         Line::from(vec![
             Span::raw(" "),
             Span::styled(
-                format!("+{}", added),
+                format!("+{}", total_insertions),
                 Style::default().fg(app.theme.success),
             ),
             Span::raw(" "),
             Span::styled(
-                format!("~{}", modified),
-                Style::default().fg(app.theme.warning),
-            ),
-            Span::raw(" "),
-            Span::styled(
-                format!("-{}", deleted),
+                format!("-{}", total_deletions),
                 Style::default().fg(app.theme.error),
             ),
-            Span::raw(" "),
-            Span::styled(format!("→{}", renamed), Style::default().fg(app.theme.info)),
         ]),
     ];
 

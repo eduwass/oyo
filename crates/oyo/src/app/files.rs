@@ -336,6 +336,24 @@ impl App {
         }
         self.last_fs_check = now;
 
+        // Check if git file list has changed (new/removed files) every 3 seconds
+        let file_list_changed =
+            if now.duration_since(self.last_file_list_check) >= Duration::from_secs(3) {
+                self.last_file_list_check = now;
+                self.multi_diff.has_file_list_changed()
+            } else {
+                false
+            };
+
+        if file_list_changed {
+            if self.auto_refresh {
+                self.refresh_all_files();
+            } else {
+                self.files_changed_on_disk = true;
+            }
+            return;
+        }
+
         let changed = if let Some(repo_root) = self.multi_diff.repo_root() {
             let repo_root = repo_root.to_path_buf();
             self.multi_diff.files.iter().any(|file| {

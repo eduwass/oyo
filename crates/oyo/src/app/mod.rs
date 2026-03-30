@@ -143,6 +143,8 @@ pub struct App {
     pub auto_refresh: bool,
     /// Last time we checked file mtimes
     last_fs_check: Instant,
+    /// Last time we checked git for file list changes (new/removed files)
+    last_file_list_check: Instant,
     /// When files were last loaded/refreshed (as SystemTime for mtime comparison)
     last_refresh_time: std::time::SystemTime,
     /// Defer heavy view rebuild by one frame (for large-file jumps)
@@ -557,6 +559,7 @@ impl App {
             files_changed_on_disk: false,
             auto_refresh: false,
             last_fs_check: Instant::now(),
+            last_file_list_check: Instant::now(),
             last_refresh_time: std::time::SystemTime::now(),
             diff_defer: true,
             diff_idle_ms: 250,
